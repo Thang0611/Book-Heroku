@@ -5,7 +5,7 @@ const { auth } = require('../controller/user.controller');
 
 const routerBook = express.Router();
 routerBook.get('/get-books',getBooks)
-routerBook.get('/detail-book/:_id',auth,detailBook)
+routerBook.get('/detail-book/:_id',detailBook)
 routerBook.delete('/delete-book/:_id',auth,deleteBook)
 routerBook.put('/update-book/:_id',auth,updateBook)
 routerBook.post('/add-book',auth,addBook)
