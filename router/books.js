@@ -9,5 +9,5 @@ routerBook.get('/get-books',getBooks)
 routerBook.get('/detail-book/:_id',auth,detailBook)
 routerBook.delete('/delete-book/:_id',auth,deleteBook)
 routerBook.put('/update-book/:_id',validateAddbookRules(),validateAddbook,auth,updateBook)
-routerBook.post('/add-book',auth,validateAddbookRules(),validateAddbook,addBook)
+routerBook.post('/add-book',validateAddbookRules(),validateAddbook,auth,addBook)
 module.exports = routerBook;
