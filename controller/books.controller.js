@@ -5,15 +5,15 @@ const getBooks = async (req, res, next) => {
         .then((data) => {
             if (data) {
                 console.log(data)
-                res.status(200).json(data)
+                return res.status(200).json(data)
             }
             else {
-                res.status(200).json('No post yet')
+                return res.status(200).json('No post yet')
             }
         })
         .catch(err => {
             console.log(err);
-            res.status(500).json('No data');
+            return res.status(500).json('No data');
         })
 }
 //
@@ -26,15 +26,15 @@ const detailBook=async (req,res,next)=>{
     await BookModel.findById(req.params._id)
     .then((data)=>{ 
         if (data){
-            res.status(200).json(data)
+            return res.status(200).json(data)
         }
         else {
-            res.status(400).json('NOT FOUND')
+            return res.status(400).json('NOT FOUND')
         }
     })
     .catch(err=>{
         console.log(err);
-        res.status(500).json('NOT FOUND ID');
+        return res.status(500).json('NOT FOUND ID');
     })
 }
 
@@ -46,13 +46,13 @@ const deleteBook= (req,res,next)=>{
             console.log(data)
             BookModel.deleteOne({_id:id},(err)=>{
                 if (err){
-                    res.status(400).json({
+                    return res.status(400).json({
                         success:false,
                         message:'delete failse'
                     })
                 }
                 else {
-                    res.status(200).json(
+                    return res.status(200).json(
                         {
                             success:true,
                             message:"delete success"
@@ -62,7 +62,7 @@ const deleteBook= (req,res,next)=>{
             })
         }
         else {
-            res.status(400).json({
+            return res.status(400).json({
                 success:false
             })
         }
@@ -70,7 +70,7 @@ const deleteBook= (req,res,next)=>{
 
     .catch(err=>{
         console.log('delete err:'+err)
-        res.status(500).json("NOT FOUND ID")
+        return res.status(500).json("NOT FOUND ID")
     })
 }
 
@@ -95,26 +95,31 @@ const updateBook=(req,res,next)=>{
             BookModel.updateOne({_id:data._id},book_update,(err,data)=>{
                 if (err){
                     console.log(err);
-                    res.json({success:false})
+                    return res.json(
+                        {
+                            success:false,
+                            'smg':'Update sách thành công'
+                        }
+                    )
                 }
                 else {
                     // console.log(data)
-                    res.json({success:true})
+                    return res.json({success:true})
                 }
             })
         }
         else {
-            res.status(400).json({
+            return res.status(400).json({
                 success:false,
-                message:"book khong ton tai"
+                message:"sách được chọn không tồn tại"
             })
         }
     }
     )
     .catch(err=>{
-        res.status(500).json({
+        return res.status(500).json({
             success:false,
-            message:"book khong ton tai"
+            message:"sách được chọn không tồn tại"
         })
     })
 }
@@ -124,14 +129,16 @@ const addBook=async (req,res,next)=>{
     var book=new BookModel(req.body)
     await book.save((err,data)=>{
         if(err){
-            res.status(400).json({
-                success:false
+            return res.status(400).json({
+                success:false,
+                'smg':'Thêm sách thất bại'
             })
         }
         else {
             console.log(data);
-            res.json({
-                success:true
+            return res.json({
+                success:true,
+                'smg':'Thêm sách thành công'
             })
         }
     })

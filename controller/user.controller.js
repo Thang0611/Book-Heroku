@@ -1,6 +1,7 @@
 const UserModel = require("../model/users")
 const jwt=require('jsonwebtoken')
 const bcrypt = require('bcrypt');
+const { use } = require("../router/users");
 const saltRounds = 10;
 
 const auth=(req,res,next)=>{
@@ -38,10 +39,17 @@ const auth=(req,res,next)=>{
         
 }
  const register = async(req, res, next) => {
-    var username = req.body.username
+    var {username,password,repassword} = req.body
     const user = new UserModel(req.body)
     // const myPlaintextPassword=password
     //create salt
+    if (password!==repassword){
+        return res.json({
+            success: false,
+            'smg':'Mật khẩu không khớp'
+        })
+    }
+    // 
     const salt = await bcrypt.genSalt(saltRounds)
     //create hasspassword
     user.password = await bcrypt.hash(user.password, salt);
@@ -52,30 +60,38 @@ const auth=(req,res,next)=>{
     .then(async (data) => {
             if (data) {
                 console.log(user)
-                res.status(200).json({
-                    isExist: true
+                return res.status(200).json({
+                    isExist: true,
+                    'smg':'Username đã tồn tại'
                 })
             }
+            
             else {
                  user.save((err, doc) => {
-                    if (err) return res.status(400).json({ success: false, err });
+                    if (err) return res.status(400).json({ 
+                        success: false, 
+                        'msg':'Đăng kí thất bại' 
+                    });
                     else {
-                        console.log(doc)
+                        console.log("Đăng nhập thành công")
                         return res.status(200).json({
                             success: true,
+                            'smg':'Đăng nhập thành công'
                         });
                     }
                     
                 });
-                console.log("access")
+                
             }
         })
 
         .catch(err => {
             console.log(err)
-            res.status(500).json('loi server')
+            return res.status(500).json({
+                success:false,
+                'msg':'Đăng kí thất bại'
+            })
         })
-    res.end;
 }
 
 const login = async (req, res, next) => {
@@ -95,7 +111,7 @@ const login = async (req, res, next) => {
     })
         .then((data) => {
             if (data) {
-                console.log(data)
+                console.log('a'+data)
                 var key = process.env.KEY;
                 const token = jwt.sign({
                     _id: data._id,
@@ -112,7 +128,7 @@ const login = async (req, res, next) => {
                     })
                 }
             else {
-                console.log(data)
+                console.log('no data')
                 res.json({
                     access: false
                 })
@@ -126,13 +142,20 @@ const login = async (req, res, next) => {
 }
 
 const logout = async(req, res, next) => {
-    console.log(req.cookies.token)
+    try{
+        console.log(req.cookies.token)
     console.log('logout')
     res.clearCookie("token",{httpOnly: false, secure: false}),
     console.log(req.cookies.token)
-    res.json({
-        access:true
+    return res.json({
+        access:true,
+        msg:'logout done'
     })
+    }
+    catch{
+        res.json('err logout')
+    }
+    
     // res.redirect(path.join(__dirname,'../public/login.html'))
 }
 
